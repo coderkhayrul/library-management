@@ -55,9 +55,9 @@
                 <div class="form-group">
                     <label for="exampleInputEmail1">Category Name</label>
                     <select name="category_id" id="category_id" class="form-control">
-                        <option disabled> Select Category</option>
+                        <option disabled selected> Select Category</option>
                         @foreach ($bookCategories as $category)
-                        <option value="{{ $category->name }}"> {{ $category->name }}</option>
+                        <option value="{{ $category->id }}"> {{ $category->name }}</option>
                         @endforeach
                     </select>
                     <span id="category_id_error" class="text-danger" role="alert"></span>
@@ -120,11 +120,18 @@
             }
             $.ajax({
                 type: "POST",
-                url: "book",
+                url: "/book",
                 data: data,
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                 dataType: "json",
                 success: function (response) {
                     console.log(response);
+                },
+                error: function (error){
+                    $('#name_error').text(error.responseJSON.errors.name);
+                    $('#author_name_error').text(error.responseJSON.errors.author_name);
+                    $('#category_id_error').text(error.responseJSON.errors.category_id);
+                    $('#description_error').text(error.responseJSON.errors.description);
                 }
             });
         });

@@ -19,7 +19,7 @@ class CreateBooksTable extends Migration
             $table->string('author_name');
             $table->integer('category_id');
             $table->text('description')->nullable();
-            $table->integer('status')->default(0);
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }

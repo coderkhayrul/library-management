@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\BookStoreRequest;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -40,9 +41,26 @@ class BookController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(BookStoreRequest $request)
     {
-        //
+        $data = Book::insert([
+            'name' => $request->name,
+            'author_name' => $request->author_name,
+            'category_id' => $request->category_id,
+            'description' => $request->description,
+            'status' => 1
+        ]);
+        if ($data) {
+            return response()->json([
+                'status' => 200,
+                'message' => "Book created successfully"
+            ]);
+        } else {
+            return response()->json([
+                'status' => 400,
+                'message' => "Book Create Failed"
+            ]);
+        }
     }
 
     /**
