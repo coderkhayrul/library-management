@@ -138,7 +138,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                    <input type="hidden" id="delete_member_id">
+                    <input type="hidden" id="delete_book_id">
                     <h4>Are your Sure! Went To Delete Data?</h4>
             </div>
             <div class="modal-footer">
@@ -266,6 +266,30 @@
                     $('#author_name_error').text(error.responseJSON.errors.author_name);
                     $('#category_id_error').text(error.responseJSON.errors.category_id);
                     $('#description_error').text(error.responseJSON.errors.description);
+                }
+            });
+        });
+
+        // Delete Book
+        $(document).on('click', '#show_delete_book', function (e) {
+            e.preventDefault();
+            var book_id = $(this).val();
+            $('#delete_book_id').val(book_id);
+            $('#DeleteBookModel').modal('show');
+        });
+
+        $(document).on('click', '#delete_book', function (e) {
+            e.preventDefault();
+            var book_id = $('#delete_book_id').val();
+            $.ajax({
+                type: "DELETE",
+                url: "/book/"+book_id,
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                success: function (response) {
+                    console.log(response);
+                    $('#DeleteBookModel').modal('hide');
+                    allBooks();
+
                 }
             });
         });

@@ -262,7 +262,8 @@ $(document).ready(function() {
             }
         })
     });
-
+    
+    // Delete Member
     $(document).on('click', '#show_delete_member', function (e) {
         e.preventDefault();
         var member_id = $(this).val();
