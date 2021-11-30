@@ -82,7 +82,10 @@ class BookController extends Controller
      */
     public function edit(Book $book)
     {
-        //
+        return response()->json([
+            'status' => 200,
+            'book' => $book
+        ]);
     }
 
     /**
@@ -92,9 +95,18 @@ class BookController extends Controller
      * @param  \App\Models\Book  $book
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Book $book)
+    public function update(BookStoreRequest $request, $id)
     {
-        //
+        $book = Book::find($id);
+        $book->name = $request->name;
+        $book->author_name = $request->author_name;
+        $book->category_id = $request->category_id;
+        $book->description = $request->description;
+        $book->update();
+        return response()->json([
+            'status' => 200,
+            'message' => 'Book Updated Successfully'
+        ]);
     }
 
     /**

@@ -77,7 +77,92 @@
 </div>
 {{-- Add Modal End --}}
 
+<!--Edit Modal Start -->
+<div class="modal fade" id="EditBookModel" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Edit Book</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <input type="hidden" id="edit_book_id">
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Book Name</label>
+                    <input placeholder="Category Name" id="edit_name" type="text" class="form-control" name="name"
+                        value="{{ old('name') }}" required autocomplete="name" autofocus>
+                    <span id="name_error" class="text-danger" role="alert"></span>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Author Name</label>
+                    <input placeholder="Author Name" id="edit_author_name" type="text" class="form-control" name="author_name"
+                        value="{{ old('author_name') }}" required autocomplete="author_name" autofocus>
+                    <span id="author_name_error" class="text-danger" role="alert"></span>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Category Name</label>
+                    <select name="category_id" id="edit_category_id" class="form-control">
+                        <option disabled selected> Select Category</option>
+                        @foreach ($bookCategories as $category)
+                        <option value="{{ $category->id }}"> {{ $category->name }}</option>
+                        @endforeach
+                    </select>
+                    <span id="category_id_error" class="text-danger" role="alert"></span>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputEmail1">Description</label>
+                    <textarea name="description" id="edit_description" class="form-control" placeholder="Description"></textarea>
+                    <span id="description_error" class="text-danger" role="alert"></span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" id="update_book">Update</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{-- Edit Modal End --}}
+{{-- Delete Modal Start --}}
+<div class="modal fade" id="DeleteBookModel" data-backdrop="static" data-keyboard="false" tabindex="-1"
+    aria-labelledby="staticBackdropLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="staticBackdropLabel">Delete Member</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                    <input type="hidden" id="delete_member_id">
+                    <h4>Are your Sure! Went To Delete Data?</h4>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-danger" id="delete_book">Yes Delete</button>
+            </div>
+        </div>
+    </div>
+</div>
+{{-- Delete Modal End --}}
+
+
+
 <script>
+    // ClearData
+    function clearData() {
+        $('#name').val(''),
+        $('#author_name').val(''),
+        $('#category_id').val(''),
+        $('#description').val(''),
+        $('#error_name').val(''),
+        $('#error_author_name').val(''),
+        $('#errro_description').val('')
+    }
     // GET ALL Books
     function allBooks(){
         $.ajax({
@@ -108,8 +193,8 @@
     allBooks();
 
     // AJAX
-    // Book Create
     $(document).ready(function () {
+        // Book Create
         $(document).on('click', '#add_book', function (e) {
             e.preventDefault();
             var data = {
@@ -125,6 +210,55 @@
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
                 dataType: "json",
                 success: function (response) {
+                    clearData();
+                    $('#AddBookModel').modal('hide');
+                    allBooks();
+                    console.log(response);
+                },
+                error: function (error){
+                    $('#name_error').text(error.responseJSON.errors.name);
+                    $('#author_name_error').text(error.responseJSON.errors.author_name);
+                    $('#category_id_error').text(error.responseJSON.errors.category_id);
+                    $('#description_error').text(error.responseJSON.errors.description);
+                }
+            });
+        });
+
+        // Book Edit
+        $(document).on('click', '#edit_book', function (e) {
+            e.preventDefault();
+            var book_id = $(this).val();
+            $('#EditBookModel').modal('show');
+            $.ajax({
+                type: "GET",
+                url: "book/"+book_id+"/edit",
+                success: function (response) {
+                    $('#edit_name').val(response.book.name);
+                    $('#edit_author_name').val(response.book.author_name);
+                    $('#edit_category_id').val(response.book.category);
+                    $('#edit_description').val(response.book.description);
+                    $('#edit_book_id').val(book_id);
+                }
+            });
+        });
+        // Update Book
+        $(document).on('click','#update_book', function (e) {
+            e.preventDefault();
+            var book_id = $('#edit_book_id').val();
+            var data = {
+                'name': $('#edit_name').val(),
+                'author_name': $('#edit_author_name').val(),
+                'category_id': $('#edit_category_id').val(),
+                'description': $('#edit_description').val(),
+            }
+            $.ajax({
+                type: "PUT",
+                url: "/book/"+book_id,
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                data: data,
+                dataType: "json",
+                success: function (response) {
+                    allBooks();
                     console.log(response);
                 },
                 error: function (error){
