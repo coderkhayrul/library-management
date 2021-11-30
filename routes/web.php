@@ -3,8 +3,10 @@
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BookCategoryController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\BookIssueController;
 use App\Http\Controllers\MemberController;
 use App\Models\BookCategory;
+use App\Models\BookIssue;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -39,3 +41,7 @@ Route::get('/allcategory', [BookCategoryController::class, 'allBookCategory']);
 // Book Route
 Route::resource('/book', BookController::class);
 Route::get('/allbook', [BookController::class, 'allBook']);
+
+
+// Book Issue And Returnd Route
+Route::get('/issuebook', [BookIssueController::class, 'index'])->name('bookissue');
