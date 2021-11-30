@@ -15,6 +15,12 @@ class CreateBookIssuesTable extends Migration
     {
         Schema::create('book_issues', function (Blueprint $table) {
             $table->id();
+            $table->integer('member_id');
+            $table->integer('book_id');
+            $table->string('phone_number');
+            $table->string('issu_date');
+            $table->string('return_date');
+            $table->integer('status')->default(1);
             $table->timestamps();
         });
     }
